@@ -1,9 +1,6 @@
-name: 'Terraform destroy dispatch'
+name: 'Terraform destroy'
 
 on:
-  push:
-    branches:
-      - please_just_show_up
   workflow_dispatch:
     inputs:
       environment:
@@ -17,8 +14,8 @@ on:
           - 'prod' 
 
 jobs:
-  terraform_destroy_dispatch:
-    name: 'Terraform destroy dispatch'
+  terraform_destroy:
+    name: 'Terraform destroy'
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment }}
     env:
