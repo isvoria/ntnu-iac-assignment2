@@ -11,6 +11,8 @@ on:
         required: true
       AZURE_TENANT_ID:
         required: true
+      TFVARS_CONTENT:
+        required: true
 
 jobs:
   terraform_deploy:
