@@ -1,8 +1,14 @@
 terraform {
+  required_version = ">= 1.0.0"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=4.0.1"
+      version = "=4.9.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.0.0"
     }
   }
 
@@ -20,12 +26,12 @@ provider "azurerm" {
   features {}
 }
 
-data "azurerm_client_config" "current" {}
+//data "azurerm_client_config" "current" {}
 
 resource "random_string" "random_string" {
-    length = 5
-    special = false
-    upper = false
+  length  = 5
+  special = false
+  upper   = false
 }
 
 resource "azurerm_resource_group" "resource_group" {

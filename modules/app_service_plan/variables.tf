@@ -1,19 +1,19 @@
 variable "app_service_plan_name" {
-  type        = string
+  type = string
 }
 
 variable "location" {
-  type        = string
+  type = string
 }
 
 variable "resource_group_name" {
-  type        = string
+  type = string
 }
 
 variable "os_type" {
-  type        = string
+  type = string
 }
 
 variable "sku_name" {
-  type        = string
+  type = string
 }

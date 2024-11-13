@@ -1,28 +1,28 @@
 variable "sql_server_name" {
-  type        = string
+  type = string
 }
 
 variable "admin_username" {
-  type        = string
+  type = string
 }
 
 variable "admin_password" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "database_name" {
-  type        = string
+  type = string
 }
 
 variable "resource_group_name" {
-  type        = string
+  type = string
 }
 
 variable "location" {
-  type        = string
+  type = string
 }
 
 variable "sku_name" {
-  type        = string
+  type = string
 }
