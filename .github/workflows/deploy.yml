@@ -18,7 +18,7 @@ jobs:
   terraform_deploy:
     name: 'Terraform plan and apply'
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name }} # dev not protected by enviroment rules, does not wait for manual approval, but stage and prod does
+    environment: ${{ github.base_ref }} # dev not protected by enviroment rules, does not wait for manual approval, but stage and prod does
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -54,19 +54,19 @@ jobs:
 
       - name: 'Select terraform workspace'
         working-directory: ./deployments
-        run: terraform workspace select ${{ github.ref_name }} || terraform workspace new ${{ github.ref_name }}
+        run: terraform workspace select ${{ github.base_ref }} || terraform workspace new ${{ github.base_ref }}
 
       - name: Create tfvars file
         working-directory: ./deployments
         run: |
-          printf "%s" "$TFVARS_CONTENT" > ${{ github.ref_name }}.tfvars
+          printf "%s" "$TFVARS_CONTENT" > ${{ github.base_ref }}.tfvars
         env:
           TFVARS_CONTENT: ${{ secrets.TFVARS_CONTENT }} # i decided to have the tfvars as a secret because of the mysql password, the secret is an envirometn secret so it changes between dev, stage and prod
 
       - name: 'Terraform plan'
         working-directory: ./deployments
-        run: terraform plan -var-file="${{ github.ref_name }}.tfvars" -out="${{ github.ref_name }}.tfplan"
+        run: terraform plan -var-file="${{ github.base_ref }}.tfvars" -out="${{ github.base_ref }}.tfplan"
 
       - name: 'Terraform apply'
         working-directory: ./deployments
-        run: terraform apply -auto-approve "${{ github.ref_name }}.tfplan"
+        run: terraform apply -auto-approve "${{ github.base_ref }}.tfplan"
