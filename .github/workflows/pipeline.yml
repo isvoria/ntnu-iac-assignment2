@@ -1,0 +1,33 @@
+name: 'Terraform pipeline'
+
+on:
+  push:
+    branches:
+      - dev
+      - stage # not allowed to push to stage
+      - prod # not allowed to push to prod
+  pull_request:
+    branches:
+      - dev
+      - stage
+      - prod
+
+jobs:
+
+  call-terraform-test:
+    uses: ./.github/workflows/test.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  call-terraform-deploy:
+    needs: call-terraform-test
+    uses: ./.github/workflows/deploy.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      TFVARS_CONTENT: ${{ secrets.TFVARS_CONTENT }}
