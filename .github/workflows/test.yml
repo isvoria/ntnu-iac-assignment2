@@ -2,6 +2,17 @@ name: 'Terraform test and validate'
 
 on:
   workflow_call:
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      GITHUB_TOKEN:
+        required: true
 
 jobs:
   terraform_test:
