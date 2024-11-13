@@ -18,7 +18,8 @@ jobs:
   terraform_deploy:
     name: 'Terraform plan and apply'
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref }} # dev not protected by enviroment rules, does not wait for manual approval, but stage and prod does
+    environment: ${{ github.base_ref || github.ref_name }}
+    # dev not protected by enviroment rules, does not wait for manual approval, but stage and prod does
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -54,7 +55,7 @@ jobs:
 
       - name: 'Select terraform workspace'
         working-directory: ./deployments
-        run: terraform workspace select ${{ github.base_ref }} || terraform workspace new ${{ github.base_ref }}
+        run: terraform workspace select ${{ github.base_ref || github.ref_name }} || terraform workspace new ${{ github.base_ref || github.ref_name }}
 
       - name: Create tfvars file
         working-directory: ./deployments
@@ -65,8 +66,8 @@ jobs:
 
       - name: 'Terraform plan'
         working-directory: ./deployments
-        run: terraform plan -var-file="${{ github.base_ref }}.tfvars" -out="${{ github.base_ref }}.tfplan"
+        run: terraform plan -var-file="${{ github.base_ref || github.ref_name }}.tfvars" -out="${{ github.base_ref || github.ref_name }}.tfplan"
 
       - name: 'Terraform apply'
         working-directory: ./deployments
-        run: terraform apply -auto-approve "${{ github.base_ref }}.tfplan"
+        run: terraform apply -auto-approve "${{ github.base_ref || github.ref_name }}.tfplan"
