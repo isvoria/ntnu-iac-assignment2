@@ -54,16 +54,17 @@ jobs:
         working-directory: ./deployments
         run: terraform workspace select ${{ github.ref_name }} || terraform workspace new ${{ github.ref_name }}
 
-      - name: 'Create tfvars file'
+      - name: Create tfvars file
         working-directory: ./deployments
-        run: echo "$TFVARS_CONTENT" > ${{ github.ref_name }}.tfvars
+        run: |
+          printf "%s" "$TFVARS_CONTENT" > ${{ github.ref_name }}.tfvars
         env:
           TFVARS_CONTENT: ${{ secrets.TFVARS_CONTENT }} # i decided to have the tfvars as a secret because of the mysql password, the secret is an envirometn secret so it changes between dev, stage and prod
 
       - name: 'Terraform plan'
         working-directory: ./deployments
-        run: terraform plan -var-file="${{ github.ref_name }}.tfvars" -out="${{ github.ref_name }}.plan"
+        run: terraform plan -var-file="${{ github.ref_name }}.tfvars" -out="${{ github.ref_name }}.tfplan"
 
       - name: 'Terraform apply'
         working-directory: ./deployments
-        run: terraform apply -auto-approve "${{ github.ref_name }}.plan"
+        run: terraform apply -auto-approve "${{ github.ref_name }}.tfplan"
