@@ -33,4 +33,33 @@ terraform destroy -var-file="prod.tfvars"
 ```
 
 ### Automatic Deployment
-When you push to the `dev` branch, it triggers a pipeline to test and create a pull request for the `stage` branch. If approved, it will deploy to stage and create a pull request for the `main` branch, which deploys to production when approved.
+When you make a pull request to `dev`, `stage` or `prod` branch, it triggers a pipeline to test and deploy the code - `pipeline.yml` file.
+
+The branches `stage` and `prod` are protected from push.
+
+The github environments `stage` and `prod` needs manual confirmation before it is applied. It is not deployed to azure unless approved.
+
+# act
+
+You can test each workflow locally using act, however you need to specify .secrets folder somewhere with azure credentials. I recommend not having the secrets folder withing the project files. The github actions are mocked, but the deployment to azure is not.
+
+test
+```bash
+act -j terraform_test
+```
+
+deploy
+```bash
+act -j terraform_deploy --env GITHUB_REF_NAME=dev
+act -j terraform_deploy --env GITHUB_REF_NAME=stage
+act -j terraform_deploy --env GITHUB_REF_NAME=prod
+```
+
+destroy
+```bash
+act workflow_dispatch -j terraform_destroy --input environment=dev
+act workflow_dispatch -j terraform_destroy --input environment=stage
+act workflow_dispatch -j terraform_destroy --input environment=prod
+```
+
+The pipeline takes test and deploy together and automates the process, the above is just units (workflow_call and workflow_dispatch)
