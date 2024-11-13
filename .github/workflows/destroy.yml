@@ -17,7 +17,7 @@ jobs:
   terraform_destroy:
     name: 'Terraform destroy'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: ${{ github.event.inputs.environment }}
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -31,8 +31,7 @@ jobs:
       - name: 'Set up Terraform'
         uses: hashicorp/setup-terraform@v2
 
-        # this is needed because i do not have a custom docker image yet, and the docker image i use dont have az but github actions does
-      - name: 'Check and install Azure CLI'
+      - name: 'Install Azure CLI'
         run: |
           if ! command -v az &> /dev/null; then
             echo "Azure CLI not found, installing..."
@@ -45,7 +44,7 @@ jobs:
         run: az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password=${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
       - name: 'Set Azure subscription'
-        run: az account set --subscription 3291a0d9-96b5-41ee-9b93-5b28b419919f
+        run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: 'Terraform init'
         working-directory: ./deployments
@@ -53,14 +52,15 @@ jobs:
 
       - name: 'Select Terraform workspace'
         working-directory: ./deployments
-        run: terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }}
+        run: terraform workspace select ${{ github.event.inputs.environment }} || terraform workspace new ${{ github.event.inputs.environment }}
 
       - name: Create tfvars file
-        run: echo "$TFVARS_CONTENT" > ./deployments/${{ inputs.environment }}.tfvars
+        working-directory: ./deployments
+        run: |
+          printf "%s" "$TFVARS_CONTENT" > ${{ github.event.inputs.environment }}.tfvars
         env:
           TFVARS_CONTENT: ${{ secrets.TFVARS_CONTENT }}
-      
+
       - name: 'Terraform destroy'
         working-directory: ./deployments
-        run: terraform destroy -auto-approve -var-file="${{ inputs.environment }}.tfvars"
-      
+        run: terraform destroy -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars"

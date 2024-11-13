@@ -60,7 +60,7 @@ jobs:
       - name: Create tfvars file
         working-directory: ./deployments
         run: |
-          printf "%s" "$TFVARS_CONTENT" > ${{ github.base_ref }}.tfvars
+          printf "%s" "$TFVARS_CONTENT" > ${{ github.base_ref || github.ref_name }}.tfvars
         env:
           TFVARS_CONTENT: ${{ secrets.TFVARS_CONTENT }} # i decided to have the tfvars as a secret because of the mysql password, the secret is an envirometn secret so it changes between dev, stage and prod
 
