@@ -6,12 +6,12 @@ on:
       environment:
         description: 'Environment to destroy (dev, stage, prod)'
         required: true
-        default: dev
+        default: 'dev'
         type: choice
         options:
-          - dev
-          - stage
-          - prod  
+          - 'dev'
+          - 'stage'
+          - 'prod' 
 
 jobs:
   terraform_destroy:
